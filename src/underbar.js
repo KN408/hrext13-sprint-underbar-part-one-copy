@@ -39,11 +39,10 @@
     if (n === undefined) {
       return array[0];
     }
-
     if (n > array.length) {
       return array;
     }
-    if (arguments.length >= 2) {
+    if (arguments[1].typeof === "object") {
       return [];
     }
     for (var i = 0; i < n; i++) {
@@ -92,17 +91,15 @@
 
     if (Array.isArray(collection) === true) {
       for (var i = 0; i < collection.length; i++) {
-        iterator(collection[i]);
+        iterator(collection[i], i, collection);
       }
     } else if (typeof(collection) === 'object'){
       for (var key in collection) {
-        iterator(key);
+        iterator(collection[key], key, collection);
       }
     }
     // var result = iterator(collection.each);
     // return result;
-
-
 
     /* END SOLUTION */
   };
@@ -183,34 +180,84 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
     /* START SOLUTION */
-    var result = [];
 
-    var tempObject = {}; // 1: 1, 2: 1, 3: 2, 4: 1,
-    for (var i = 0; i < array.length; i++) {
-      if (tempObject[array[i]] === undefined) { //[1,2,3,3,4]
-        tempObject[array[i]] = 1;
-      } else {
-        tempObject[array[i]] += 1;
+    if (array.length === 0) {
+      return []; //[1]
+    }
+
+    var result = [];
+    result.push(array[0]);
+
+    if (isSorted === true) {
+      //var x = 0;
+      var value = array[0];
+
+      for (var i = 0; i < array.length; i++) {
+        //var x = 0
+        //var value = array[x];
+
+        if (array[i] !== result[result.length - 1]) { //[1,1,2,3,3,4,4]
+          result.push(array[i]);
+        }
+      }
+    } else {
+      var value = array[0];
+
+      for (var i = 0; i < array.length; i++) {
+        //var x = 0
+        //var value = array[x];
+
+        if (array[i] !== result[result.length - 1]) { //[1,1,2,3,3,4,4]
+          result.push(array[i]);
+        }
       }
     }
 
-    for (var key in tempObject) {
-      result.push(Number(key));
-    }
-
     return result;
+  }
+
+
+
+    // var result = [];
+
+    // var tempObject = {}; // 1: 1, 2: 1, 3: 2, 4: 1,
+    // for (var i = 0; i < array.length; i++) {
+    //   if (tempObject[array[i]] === undefined) { //[1,2,3,3,4]
+    //     tempObject[array[i]] = 1;
+    //   } else {
+    //     tempObject[array[i]] += 1;
+    //   }
+    // }
+
+    // for (var key in tempObject) {
+    //   result.push(Number(key));
+    // }
+
+    // return result;
 
     // var x = 0
 
 
     /* END SOLUTION */
-  };
+
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
     /* START SOLUTION */
+    var result = [];
 
+    if (Array.isArray(collection) === true) {
+    for (var i = 0; i < collection.length; i++) {
+      result.push(iterator(collection[i], i));
+    }
+  } else {
+    for (var key in collection) {
+      result.push(iterator(key));
+    }
+  }
+
+    return result;
     /* END SOLUTION */
   };
 
