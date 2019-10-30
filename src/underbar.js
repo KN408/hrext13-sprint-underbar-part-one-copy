@@ -15,7 +15,7 @@
   // iterator when the user does not pass one in, this will be handy.
   _.identity = function(val) {
     /* START SOLUTION */
-
+    return val;
     /* END SOLUTION */
   };
 
@@ -34,7 +34,23 @@
   // return just the first element.
   _.first = function(array, n) {
     /* START SOLUTION */
+    var result = [];
 
+    if (n === undefined) {
+      return array[0];
+    }
+
+    if (n > array.length) {
+      return array;
+    }
+    if (arguments.length >= 2) {
+      return [];
+    }
+    for (var i = 0; i < n; i++) {
+      result.push(array[i]);
+    }
+
+    return result;  // --------------------------
     /* END SOLUTION */
   };
 
@@ -42,6 +58,26 @@
   // last element.
   _.last = function(array, n) {
     /* START SOLUTION */
+
+    var result = [];
+
+    if (n === undefined) {
+      return array[array.length-1];
+    }
+
+    if (n > array.length) {
+      return array;
+    }
+
+    if (array.length === 0 || n === 0) {
+      return result;
+    }
+
+    for (var i = array.length - n; i < array.length; i++) { // [1,2,3,4,5]
+      result.push(array[i]);
+    }
+
+     return result;
 
     /* END SOLUTION */
   };
@@ -54,6 +90,20 @@
   _.each = function(collection, iterator) {
     /* START SOLUTION */
 
+    if (Array.isArray(collection) === true) {
+      for (var i = 0; i < collection.length; i++) {
+        iterator(collection[i]);
+      }
+    } else if (typeof(collection) === 'object'){
+      for (var key in collection) {
+        iterator(key);
+      }
+    }
+    // var result = iterator(collection.each);
+    // return result;
+
+
+
     /* END SOLUTION */
   };
 
@@ -62,33 +112,96 @@
   _.indexOf = function(array, target){
     /* START SOLUTION */
 
+    // if array.indexOf(target) === undefined) {
+    //   return -1;
+    // } else {
+    //   return array.indexOf(target);
+    // }
+
+    if (arguments.length > 2) {
+      for (var i = arguments[2]; i < array.length; i++) {
+        if (array[i] === target) {
+          return i;
+        }
+      }
+    }
+
+    for (var i = 0; i < array.length; i++) {
+      if (array[i] === target) {
+        return i;
+      }
+    }
+    return -1;
     /* END SOLUTION */
   };
+
 
   //Create a function for findIndex to test its existence
   _.findIndex = function(array, test){
     /* START SOLUTION */
 
+    for (var i = 0; i < array.length; i++) {
+      if (test(array[i]) === true) {
+        return i;
+      }
+    }
+
+    return -1;
     /* END SOLUTION */
   }
-  
+
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
     /* START SOLUTION */
+    var result = [];
 
+    for (var i = 0; i < collection.length; i++) {
+      if (test(collection[i]) === true) {
+        result.push(collection[i]);
+      }
+    }
+
+    return result;
     /* END SOLUTION */
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     /* START SOLUTION */
+    var result = [];
 
+    for (var i = 0; i < collection.length; i++) {
+      if (test(collection[i]) === false) {
+        result.push(collection[i]);
+      }
+    }
+
+    return result;
     /* END SOLUTION */
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
     /* START SOLUTION */
+    var result = [];
+
+    var tempObject = {}; // 1: 1, 2: 1, 3: 2, 4: 1,
+    for (var i = 0; i < array.length; i++) {
+      if (tempObject[array[i]] === undefined) { //[1,2,3,3,4]
+        tempObject[array[i]] = 1;
+      } else {
+        tempObject[array[i]] += 1;
+      }
+    }
+
+    for (var key in tempObject) {
+      result.push(Number(key));
+    }
+
+    return result;
+
+    // var x = 0
+
 
     /* END SOLUTION */
   };
