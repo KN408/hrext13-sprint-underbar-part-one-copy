@@ -42,11 +42,10 @@
     if (n > array.length) {
       return array;
     }
-    if (arguments[1].typeof === "object") {
-      return [];
-    }
-    for (var i = 0; i < n; i++) {
-      result.push(array[i]);
+    if (Array.isArray(array) === true && Number.isInteger(n)) {
+      for (var i = 0; i < n; i++) {
+        result.push(array[i]);
+      }
     }
 
     return result;  // --------------------------
@@ -180,67 +179,88 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
     /* START SOLUTION */
-
     if (array.length === 0) {
       return []; //[1]
     }
 
-    var result = [];
-    result.push(array[0]);
+    console.log(arguments);
+    var uniqueValues = [];
+    var iteratedValues = []; // [1,2,3,4]
 
-    if (isSorted === true) {
-      //var x = 0;
-      var value = array[0];
+      if (typeof(isSorted) === 'function' && typeof(iterator) === "undefined") {
+        var iterator = isSorted;
+        for (var j = 0; j < array.length; j++) {
+          if (iteratedValues.lastIndexOf(iterator(array[j])) === 'undefined') { // [[2]] +2
+          iteratedValues.push(iterator(array[j]));
+          }
+        }
+      } else if (typeof(iterator) === 'function' && typeof(isSorted) === "undefined") { //if iterator exists & sorted doesnt
+        //sSorted = iterator;
+        for (var i = 0; i < array.length; i++) {
+          if (iteratedValues.lastIndexOf(iterator(array[i])) === 'undefined') {
+          iteratedValues.push(iterator(array[i]));
+          }
+        }
+      } else if (typeof(isSorted) === 'boolean' && typeof(iterator) === 'undefined') { //if sorted exists & iterator isn't
+        // var iterator = isSorted;
+        // for (var j = 0; j < array.length; j++) {
+        //   result.push(iterator(array[j]));
+        // }
+        uniqueValues.push(array[0]); // adds first item to array so we can compare
+        var value = array[0]; // setting value = first item in array
 
-      for (var i = 0; i < array.length; i++) {
+        for (var i = 0; i < array.length; i++) { // iteration loop
+          //var x = 0
+          //var value = array[x];
+
+          if (array[i] !== result[result.length - 1]) { //[4,1,2,3,3,4,4] checks to see if current number not = last item in array
+            uniqueValues.push(array[i]); // pushes number if its not the same
+          }
+        }
+      } else if (typeof(isSorted) === 'boolean' && typeof(iterator) === 'function') { //both exist
+        for (var i = 0; i < array.length; i++) {
+          iteratedValues.push(iterator(array[i]));
+        }
+      }
+
+      uniqueValues.push(array[0]); // adds first item to array so we can compare
+      var value = array[0]; // setting value = first item in array
+
+      for (var i = 0; i < array.length; i++) { // iteration loop
         //var x = 0
         //var value = array[x];
 
-        if (array[i] !== result[result.length - 1]) { //[1,1,2,3,3,4,4]
-          result.push(array[i]);
+        if (array[i] !== uniqueValues[uniqueValues.length - 1]) { //[4,1,2,3,3,4,4] checks to see if current number not = last item in array
+          uniqueValues.push(array[i]); // pushes number if its not the same
         }
       }
-    } else {
-      var value = array[0];
 
-      for (var i = 0; i < array.length; i++) {
-        //var x = 0
-        //var value = array[x];
+    //if (isSorted !== true) {  //check if its sorted
 
-        if (array[i] !== result[result.length - 1]) { //[1,1,2,3,3,4,4]
-          result.push(array[i]);
-        }
-      }
-    }
+      // result.push(array[0]); // adds first item to array so we can compare
+      // var value = array[0]; // setting value = first item in array
 
+      // for (var i = 0; i < array.length; i++) { // iteration loop
+      //   //var x = 0
+      //   //var value = array[x];
+
+      //   if (array[i] !== result[result.length - 1]) { //[4,1,2,3,3,4,4] checks to see if current number not = last item in array
+      //     result.push(array[i]); // pushes number if its not the same
+      //   }
+      // }
+  //  } for isSorted if statement bracket
+
+    // if (isSorted === true) {
+    //   for (var j = 0; j < array.length; j++) {
+    //     result.push(iterator(array[j]));
+    //   }
+    //   iterator(result);
+    //   return result;
+    // }
     return result;
   }
 
-
-
-    // var result = [];
-
-    // var tempObject = {}; // 1: 1, 2: 1, 3: 2, 4: 1,
-    // for (var i = 0; i < array.length; i++) {
-    //   if (tempObject[array[i]] === undefined) { //[1,2,3,3,4]
-    //     tempObject[array[i]] = 1;
-    //   } else {
-    //     tempObject[array[i]] += 1;
-    //   }
-    // }
-
-    // for (var key in tempObject) {
-    //   result.push(Number(key));
-    // }
-
-    // return result;
-
-    // var x = 0
-
-
     /* END SOLUTION */
-
-
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
@@ -253,7 +273,7 @@
     }
   } else {
     for (var key in collection) {
-      result.push(iterator(key));
+      result.push(iterator(collection[key]));
     }
   }
 
@@ -275,23 +295,73 @@
     // values into a new array of values. _.pluck() is solved for you
     // as an example of this.
     /* START SOLUTION */
+    var result = [];
+
+    if (Array.isArray(collection)) {
+      for (var i = 0; i < collection.length; i++) {
+        var currentObject = collection[i];
+
+        if (Array.isArray(currentObject)) {
+          for (var j = 0; j < currentObject.length; j++) {
+            if (currentObject[j] === key) {
+              result.push(currentObject[j]);
+            }
+          }
+        }
+
+        if (currentObject[key] === undefined && typeof(currentObject) === 'object') {
+          result.push(undefined)
+        } else {
+          result.push(currentObject[key]);
+        }
+      }
+    } else if (typeof(collection) === 'object') {
+      for (var key in collection) {
+        result.push(collection[key]);
+      }
+    } else {
+      result.push(key);
+    }
+
+    return result;
 
     /* END SOLUTION */
   };
 
-  // Reduces an array or object to a single value by repetitively calling
-  // iterator(accumulator, item) for each item. accumulator should be
-  // the return value of the previous iterator call.
+  // Reduces an array or object to a single value by                          inputs: (arrays/objects) output: single value (number?)
+  // repetitively calling iterator(accumulator, item) for each item.
+  // Accumulator should be the return value of the previous iterator call.
   //
-  // You can pass in a starting value for the accumulator as the third argument
-  // to reduce. If no starting value is passed, the first element is used as
-  // the accumulator, and is never passed to the iterator. In other words, in
-  // the case where a starting value is not passed, the iterator is not invoked
-  // until the second element, with the first element as its second argument.
+  //
+  // You can pass in a starting value for the accumulator as the third argument to reduce.
+  // If no starting value is passed, the first element is used as the accumulator
+  // and is never passed to the iterator.
+  // In other words, in the case where a starting value is not passed,
+  //   the iterator is not invoked until the second element
+  //      with the first element as its second argument.
   //
   _.reduce = function(collection, iterator, accumulator) {
     /* START SOLUTION */
 
+    if (Array.isArray(collection)) { // checks if its an array
+      var result;
+
+      if (accumulator === undefined && Number.isInteger(collection[0])) { // if accumulator is undefined and first index is a number
+        var result = collection[0];
+        accumulator = collection[0]; // setting accumulator to first value
+        for (var i = 1; i < collection.length; i++) {
+          result += iterator(collection[i], accumulator);
+        }
+        return result;
+        //return iterator(accumulator, collection[1])
+      };
+
+
+      for (var j = 0; j < collection.length; j++) {
+        result = iterator(accumulator, collection[j])
+      }
+    }
+    return result;
     /* END SOLUTION */
   };
 
